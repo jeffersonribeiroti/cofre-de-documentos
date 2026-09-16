@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Search, Filter, RefreshCw, CheckCircle2, XCircle, AlertTriangle, Terminal } from 'lucide-react';
+import { Shield, Search, Filter, RefreshCw, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { AuditLog } from '../types';
 
 interface AuditViewProps {
-  onOpenTerminal?: () => void;
 }
 
-export const AuditView: React.FC<AuditViewProps> = ({ onOpenTerminal }) => {
+export const AuditView: React.FC<AuditViewProps> = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtroAcao, setFiltroAcao] = useState('');
@@ -94,16 +93,6 @@ export const AuditView: React.FC<AuditViewProps> = ({ onOpenTerminal }) => {
           </p>
         </div>
         <div className="flex items-center space-x-2 self-start sm:self-auto">
-          {onOpenTerminal && (
-            <button
-              onClick={onOpenTerminal}
-              className="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-emerald-400 bg-slate-950 border border-emerald-500/50 hover:border-emerald-400 px-3 py-2 rounded-lg hover:bg-slate-900 transition shadow-sm group"
-            >
-              <Terminal className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span>Terminal de Golpes (SIEM)</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            </button>
-          )}
           <button
             onClick={carregarLogs}
             className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 px-3 py-2 rounded-lg hover:bg-slate-50 transition shadow-sm"

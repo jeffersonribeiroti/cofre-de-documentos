@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Lock, FileText, Users, Activity, User as UserIcon, LogOut, Info, Terminal } from 'lucide-react';
+import { Shield, Lock, FileText, Users, Activity, User as UserIcon, LogOut, } from 'lucide-react';
 import { User } from '../types';
 import { formatClassificationBadge } from '../utils/masks';
 
@@ -8,8 +8,6 @@ interface NavbarProps {
   currentTab: string;
   onSelectTab: (tab: string) => void;
   onLogout: () => void;
-  onOpenGuide: () => void;
-  onOpenTerminal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -17,8 +15,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
   onSelectTab,
   onLogout,
-  onOpenGuide,
-  onOpenTerminal,
 }) => {
   const isAdmin = user.tipo === 'ADMINISTRADOR';
   const badge = formatClassificationBadge(user.nivel_autorizacao);
@@ -118,27 +114,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Usuário logado & Ações */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            {onOpenTerminal && (
-              <button
-                id="btn-nav-terminal-soc"
-                onClick={onOpenTerminal}
-                title="Abrir Terminal de Logs de Tentativas de Golpes (SIEM SOC)"
-                className="px-2.5 py-1.5 bg-slate-950 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-mono font-semibold flex items-center space-x-1.5 transition shadow-sm group"
-              >
-                <Terminal className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
-                <span className="hidden lg:inline">Terminal de Golpes</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              </button>
-            )}
-
-            <button
-              id="btn-info-guia"
-              onClick={onOpenGuide}
-              title="Guia de Segurança e Níveis"
-              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-md transition"
-            >
-              <Info className="w-5 h-5" />
-            </button>
 
             <div className="hidden sm:flex flex-col items-end text-right border-l border-slate-700 pl-3">
               <div className="flex items-center space-x-2">

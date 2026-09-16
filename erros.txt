@@ -1,0 +1,1 @@
+src/App.tsx(11,36): error TS2307: Cannot find module './components/SecurityGuideModal' or its corresponding type declarations.

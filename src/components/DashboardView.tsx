@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Users, FileText, Globe, Building2, Lock, ShieldAlert, Activity, ShieldCheck, ArrowUpRight, Terminal } from 'lucide-react';
+import { Users, FileText, Globe, Building2, Lock, ShieldAlert, Activity, ShieldCheck, ArrowUpRight } from 'lucide-react';
 import { DashboardMetrics } from '../types';
 
 interface DashboardViewProps {
   onNavigateToDocs: (classificacao?: string) => void;
   onNavigateToAudit: () => void;
-  onOpenTerminal?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigateToDocs,
   onNavigateToAudit,
-  onOpenTerminal,
 }) => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,16 +58,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </p>
         </div>
         <div className="flex items-center space-x-2 self-start sm:self-auto">
-          {onOpenTerminal && (
-            <button
-              onClick={onOpenTerminal}
-              className="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-emerald-400 bg-slate-950 border border-emerald-500/50 hover:border-emerald-400 px-3 py-1.5 rounded-lg hover:bg-slate-900 transition shadow-sm group"
-            >
-              <Terminal className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span>Terminal de Golpes (SOC)</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            </button>
-          )}
           <button
             onClick={onNavigateToAudit}
             className="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition"
@@ -138,28 +126,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Card Acessos Negados */}
         <div
-          onClick={onOpenTerminal}
           className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between ${
-            onOpenTerminal ? 'cursor-pointer hover:border-rose-300 hover:shadow-md transition' : ''
+  ''
           }`}
-          title={onOpenTerminal ? 'Clique para abrir o Terminal de Tentativas de Golpes' : undefined}
         >
           <div>
             <div className="flex items-center space-x-1.5">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                 Acessos Negados
               </span>
-              {onOpenTerminal && (
-                <span className="text-[10px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded">
-                  SOC
-                </span>
-              )}
             </div>
             <span className="text-3xl font-black text-rose-600 mt-1 block">
               {metrics?.total_acessos_negados || 0}
             </span>
             <span className="text-[11px] text-slate-400 mt-1 block">
-              {onOpenTerminal ? 'Ver logs no Terminal →' : 'Bloqueios por nível insuficiente'}
+              Bloqueios por nível insuficiente
             </span>
           </div>
           <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center">

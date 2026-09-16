@@ -8,8 +8,6 @@ import { DashboardView } from './components/DashboardView';
 import { AuditView } from './components/AuditView';
 import { UsersView } from './components/UsersView';
 import { ProfileView } from './components/ProfileView';
-import { SecurityGuideModal } from './components/SecurityGuideModal';
-import { SecurityTerminalModal } from './components/SecurityTerminalModal';
 import { User, DocumentItem, WatermarkData } from './types';
 import { Search, Filter, Plus, RotateCcw, Lock, ShieldCheck, AlertTriangle, FileText, CheckCircle2 } from 'lucide-react';
 
@@ -31,8 +29,6 @@ export function App() {
   const [deniedInfo, setDeniedInfo] = useState<any>(null);
   const [docToEdit, setDocToEdit] = useState<DocumentItem | null>(null);
   const [showDocForm, setShowDocForm] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
-  const [showTerminal, setShowTerminal] = useState(false);
 
   // Mensagens globais de feedback
   const [notificacao, setNotificacao] = useState<{ tipo: 'sucesso' | 'erro'; texto: string } | null>(null);
@@ -257,8 +253,6 @@ export function App() {
         currentTab={currentTab}
         onSelectTab={(tab) => setCurrentTab(tab)}
         onLogout={handleLogout}
-        onOpenGuide={() => setShowGuide(true)}
-        onOpenTerminal={() => setShowTerminal(true)}
       />
 
       {/* Toast de Notificação */}
@@ -291,7 +285,6 @@ export function App() {
               setCurrentTab('documentos');
             }}
             onNavigateToAudit={() => setCurrentTab('auditoria')}
-            onOpenTerminal={() => setShowTerminal(true)}
           />
         )}
 
@@ -420,7 +413,7 @@ export function App() {
 
         {/* ABA: AUDITORIA (ADMINISTRADOR) */}
         {currentTab === 'auditoria' && currentUser.tipo === 'ADMINISTRADOR' && (
-          <AuditView onOpenTerminal={() => setShowTerminal(true)} />
+          <AuditView />
         )}
 
         {/* ABA: MEU PERFIL */}
@@ -460,16 +453,6 @@ export function App() {
         />
       )}
 
-      {showGuide && (
-        <SecurityGuideModal onClose={() => setShowGuide(false)} />
-      )}
-
-      {showTerminal && (
-        <SecurityTerminalModal
-          isOpen={showTerminal}
-          onClose={() => setShowTerminal(false)}
-        />
-      )}
     </div>
   );
 }
