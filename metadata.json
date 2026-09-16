@@ -1,0 +1,6 @@
+{
+  "name": "Cofre de Documentos",
+  "description": "Sistema seguro de armazenamento e visualização controlada de documentos com múltiplos níveis de confidencialidade, controle de acesso e auditoria.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
