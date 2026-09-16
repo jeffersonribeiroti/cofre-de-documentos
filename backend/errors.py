@@ -1,9 +1,11 @@
 """
 Módulo de Tratamento Centralizado de Erros
 SECURITY: Global Error Handling
-Garante respostas amigáveis padronizadas em formato JSON para 400, 401, 403, 404, 405, 429 e 500.
-NUNCA vaza stack traces, caminhos internos, consultas SQL ou dados sensíveis para o cliente.
+
+Garante respostas amigáveis padronizadas em formato JSON.
+NUNCA permite que dados sensíveis sejam enviados ao cliente.
 """
+
 import uuid
 from typing import Dict, Any, Optional
 
@@ -17,9 +19,55 @@ MENSAGENS_PADRAO = {
     500: "Ocorreu um erro interno no servidor. Tente novamente em instantes."
 }
 
+# Campos que nunca devem ser enviados ao cliente.
+CAMPOS_SENSIVEIS = {
+    "senha",
+    "password",
+    "senha_hash",
+    "salt",
+    "token",
+    "secret",
+    "secret_key",
+    "api_key",
+    "apikey",
+    "authorization",
+    "cookie",
+    "stack",
+    "traceback"
+}
+
+
 def gerar_request_id() -> str:
     """Gera um identificador único de rastreamento para a requisição."""
     return f"req_{uuid.uuid4().hex[:12]}"
+
+
+def _filtrar_dados_sensiveis(valor: Any) -> Any:
+    """
+    Remove recursivamente informações sensíveis de dicionários
+    e estruturas aninhadas antes de enviá-las ao cliente.
+    """
+    if isinstance(valor, dict):
+        resultado = {}
+
+        for chave, conteudo in valor.items():
+            chave_normalizada = str(chave).strip().lower()
+
+            if chave_normalizada in CAMPOS_SENSIVEIS:
+                continue
+
+            resultado[chave] = _filtrar_dados_sensiveis(conteudo)
+
+        return resultado
+
+    if isinstance(valor, list):
+        return [_filtrar_dados_sensiveis(item) for item in valor]
+
+    if isinstance(valor, tuple):
+        return tuple(_filtrar_dados_sensiveis(item) for item in valor)
+
+    return valor
+
 
 def formatar_resposta_erro(
     codigo: int,
@@ -29,12 +77,18 @@ def formatar_resposta_erro(
 ) -> Dict[str, Any]:
     """
     Constrói a resposta padronizada de erro.
-    SECURITY: Global Error Handling
+
+    SECURITY:
+    Dados sensíveis são filtrados recursivamente antes
+    de serem retornados ao cliente.
     """
     if not request_id:
         request_id = gerar_request_id()
 
-    msg = mensagem if mensagem else MENSAGENS_PADRAO.get(codigo, "Ocorreu um erro inesperado.")
+    msg = mensagem if mensagem else MENSAGENS_PADRAO.get(
+        codigo,
+        "Ocorreu um erro inesperado."
+    )
 
     resposta = {
         "sucesso": False,
@@ -44,9 +98,7 @@ def formatar_resposta_erro(
     }
 
     if detalhes_extras and isinstance(detalhes_extras, dict):
-        for k, v in detalhes_extras.items():
-            # Não permite inclusão de dados perigosos
-            if k not in ("senha", "token", "salt", "secret", "stack"):
-                resposta[k] = v
+        dados_filtrados = _filtrar_dados_sensiveis(detalhes_extras)
+        resposta.update(dados_filtrados)
 
     return resposta
