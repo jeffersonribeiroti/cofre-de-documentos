@@ -1,19 +1,19 @@
-import express from "express";
+﻿import express from "express";
 import path from "path";
 import { spawn } from "child_process";
 import http from "http";
 import { createServer as createViteServer } from "vite";
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const PYTHON_PORT = 5001;
 
-// Inicia o serviço de backend Python em subprocesso
+// Inicia o serviÃ§o de backend Python em subprocesso
 let pythonProcess: any = null;
 let isShuttingDown = false;
 
 function startPythonBackend() {
   if (isShuttingDown) return;
-  console.log("[*] Iniciando serviço de backend Python na porta " + PYTHON_PORT + "...");
+  console.log("[*] Iniciando serviÃ§o de backend Python na porta " + PYTHON_PORT + "...");
   pythonProcess = spawn("python", ["backend/server.py", String(PYTHON_PORT)], {
     stdio: "inherit",
     env: { ...process.env, PYTHONUNBUFFERED: "1" }
@@ -24,7 +24,7 @@ function startPythonBackend() {
   });
 
   pythonProcess.on("exit", (code: any, signal: any) => {
-    console.log(`[-] Backend Python finalizado com código ${code} / sinal ${signal}`);
+    console.log(`[-] Backend Python finalizado com cÃ³digo ${code} / sinal ${signal}`);
     if (!isShuttingDown) {
       console.log("[*] Reiniciando processo do backend Python em 1.5 segundos...");
       setTimeout(() => {
@@ -71,7 +71,7 @@ async function startServer() {
 
   const app = express();
 
-  // Parse de corpo para rotas se necessário
+  // Parse de corpo para rotas se necessÃ¡rio
   app.use(express.raw({ type: "*/*", limit: "20mb" }));
 
   // Proxy transparente de todas as rotas /api/* para o Backend Python
@@ -102,11 +102,11 @@ async function startServer() {
     });
 
     pyReq.on("error", (err) => {
-      console.error("[-] Erro de comunicação com o backend Python:", err.message);
+      console.error("[-] Erro de comunicaÃ§Ã£o com o backend Python:", err.message);
       if (!res.headersSent) {
         res.status(502).json({
           sucesso: false,
-          erro: "Serviço de backend Python temporariamente indisponível. Tente novamente em instantes."
+          erro: "ServiÃ§o de backend Python temporariamente indisponÃ­vel. Tente novamente em instantes."
         });
       }
     });
@@ -117,7 +117,7 @@ async function startServer() {
     pyReq.end();
   });
 
-  // Vite middleware para desenvolvimento / estático para produção
+  // Vite middleware para desenvolvimento / estÃ¡tico para produÃ§Ã£o
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
