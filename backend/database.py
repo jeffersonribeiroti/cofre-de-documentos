@@ -8,6 +8,7 @@ import os
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from backend.config import DB_PATH, SESSION_EXPIRATION_HOURS
+from backend.validators import mascarar_cpf
 
 def _recover_corrupted_db():
     print("[!] Detectada inconsistência no arquivo SQLite. Restaurando integridade...")
@@ -275,7 +276,12 @@ def listar_usuarios():
                    terms_accepted, privacy_accepted, terms_version, privacy_version, accepted_at, criado_em
             FROM users ORDER BY criado_em DESC
         """)
-        return [dict(row) for row in cursor.fetchall()]
+        usuarios = []
+        for row in cursor.fetchall():
+            usuario = dict(row)
+            usuario["cpf"] = mascarar_cpf(usuario.get("cpf", ""))
+            usuarios.append(usuario)
+        return usuarios
 
 def obter_aceite_legal(user_id: int):
     """

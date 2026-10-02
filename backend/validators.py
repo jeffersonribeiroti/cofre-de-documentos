@@ -23,6 +23,15 @@ def formatar_cpf(cpf_limpo: str) -> str:
         return cpf_limpo
     return f"{cpf_limpo[0:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:11]}"
 
+def mascarar_cpf(cpf_limpo: str) -> str:
+    """Mascara o CPF para exibição, preservando somente os quatro últimos dígitos."""
+    if not cpf_limpo:
+        return ""
+    digitos = sanitizar_apenas_digitos(cpf_limpo)
+    if len(digitos) != 11:
+        return cpf_limpo
+    return f"***.***.***-{digitos[-2:]}"
+
 def formatar_telefone(tel_limpo: str) -> str:
     """Aplica a máscara visual (00) 00000-0000 ou (00) 0000-0000."""
     if len(tel_limpo) == 11:

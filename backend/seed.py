@@ -10,6 +10,7 @@ import uuid
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.config import UPLOADS_DIR
+from backend.storage import salvar_arquivo_seguro, migrar_arquivos_existentes_para_criptografia
 from backend.database import init_db, obter_usuario_por_cpf, criar_usuario, criar_documento
 from backend.security import hash_password
 
@@ -74,6 +75,7 @@ startxref
 def popular_dados_iniciais(forcar_reset: bool = False):
     """Inicializa tabelas e insere registros de teste caso ainda não existam."""
     init_db()
+    migrar_arquivos_existentes_para_criptografia()
 
     # 1. Usuários de Demonstração
     usuarios_seed = [
@@ -189,11 +191,15 @@ def popular_dados_iniciais(forcar_reset: bool = False):
     if len(docs_existentes) == 0:
         for doc in documentos_seed:
             pdf_bytes = gerar_pdf_simples(doc["titulo"], doc["classificacao"], doc["conteudo"])
-            nome_arquivo_uuid = f"{uuid.uuid4().hex}.pdf"
-            caminho_disco = os.path.join(UPLOADS_DIR, nome_arquivo_uuid)
-            with open(caminho_disco, "wb") as f:
-                f.write(pdf_bytes)
-            
+            sucesso, erro, nome_arquivo_uuid, tamanho_armazenado = salvar_arquivo_seguro(
+                pdf_bytes,
+                f"{doc['titulo'][:30]}.pdf",
+                "application/pdf"
+            )
+            if not sucesso:
+                print(f"[!] Falha ao armazenar documento de demonstração: {erro}")
+                continue
+
             criar_documento(
                 titulo=doc["titulo"],
                 descricao=doc["descricao"],

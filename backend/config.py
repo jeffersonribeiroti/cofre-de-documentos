@@ -14,7 +14,34 @@ os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 # Parâmetros de Segurança
-SECRET_KEY = os.environ.get("COFRE_SECRET_KEY", secrets.token_hex(32))
+SECRET_KEY_FILE = os.path.join(DATA_DIR, ".cofre_secret_key")
+
+def _obter_secret_key() -> str:
+    """Obtém uma chave estável para criptografia local e aceita sobrescrita por variável de ambiente."""
+    chave_env = os.environ.get("COFRE_SECRET_KEY")
+    if chave_env:
+        return chave_env
+
+    try:
+        if os.path.exists(SECRET_KEY_FILE):
+            with open(SECRET_KEY_FILE, "r", encoding="utf-8") as arquivo:
+                chave = arquivo.read().strip()
+                if chave:
+                    return chave
+
+        chave = secrets.token_urlsafe(48)
+        with open(SECRET_KEY_FILE, "w", encoding="utf-8") as arquivo:
+            arquivo.write(chave)
+        try:
+            os.chmod(SECRET_KEY_FILE, 0o600)
+        except OSError:
+            pass
+        return chave
+    except OSError:
+        # Fallback apenas quando o ambiente não permite persistir um arquivo local.
+        return secrets.token_urlsafe(48)
+
+SECRET_KEY = _obter_secret_key()
 SESSION_EXPIRATION_HOURS = 8
 PBKDF2_ITERATIONS = 600000
 
